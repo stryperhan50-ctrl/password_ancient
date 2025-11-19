@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ancient Password Generator - AI 라이프 솔루션 챌린지</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 50%, #fef3c7 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+
+    .header h1 {
+      color: #fbbf24;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .header .subtitle {
+      color: #10b981;
+      font-size: 1rem;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .header p {
+      color: #cbd5e1;
+      font-size: 1.1rem;
+    }
+
+    .main-section {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      color: #78350f;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .generator-form {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #78350f;
+      margin-bottom: 10px;
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    select {
+      width: 100%;
+      padding: 15px 40px 15px 15px;
+      font-size: 1rem;
+      border: 3px solid #f59e0b;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #78350f;
+      cursor: pointer;
+      appearance: none;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    select:hover {
+      border-color: #d97706;
+      box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #d97706;
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+    }
+
+    .select-wrapper::after {
+      content: '▼';
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: #78350f;
+      font-size: 0.8rem;
+    }
+
+    .generate-btn {
+      width: 100%;
+      padding: 20px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+      margin-bottom: 20px;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(245, 158, 11, 0.5);
+      background: linear-gradient(135deg, #d97706, #b45309);
+    }
+
+    .dual-generator-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-top: 30px;
+    }
+
+    .generator-box {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border: 3px solid #10b981;
+      border-radius: 15px;
+      padding: 30px;
+      display: none;
+    }
+
+    .generator-box.show {
+      display: block;
+      animation: slideIn 0.5s;
+    }
+
+    .generator-box.junior {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border-color: #f59e0b;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .generator-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .generator-title {
+      font-size: 1.2rem;
+      color: #065f46;
+      font-weight: bold;
+    }
+
+    .generator-title.junior {
+      color: #78350f;
+    }
+
+    .regenerate-btn {
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .regenerate-btn:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+    }
+
+    .regenerate-btn.junior {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .regenerate-btn.junior:hover {
+      background: linear-gradient(135deg, #d97706, #b45309);
+    }
+
+    .password-display {
+      background: white;
+      border: 2px solid #34d399;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+
+    .password-display.junior {
+      border-color: #fbbf24;
+    }
+
+    .password-label {
+      font-size: 0.9rem;
+      color: #059669;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .password-label.junior {
+      color: #d97706;
+    }
+
+    .script-text {
+      font-size: 1.5rem;
+      color: #15803d;
+      text-align: center;
+      margin-bottom: 15px;
+      padding: 15px;
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border-radius: 8px;
+      border: 2px solid #10b981;
+      word-break: break-all;
+    }
+
+    .script-text.junior {
+      color: #3730a3;
+      background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+      border-color: #6366f1;
+      font-size: 1.8rem;
+    }
+
+    .copy-btn {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .copy-btn:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+    }
+
+    .copy-btn.copied {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+    }
+
+    .copy-btn.junior {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .copy-btn.junior:hover {
+      background: linear-gradient(135deg, #d97706, #b45309);
+    }
+
+    .info-badge {
+      font-size: 0.85rem;
+      text-align: center;
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(16, 185, 129, 0.1);
+      border-radius: 6px;
+      color: #059669;
+      line-height: 1.5;
+    }
+
+    .info-badge.junior {
+      background: rgba(251, 146, 60, 0.1);
+      color: #b45309;
+    }
+
+    .explanation-box {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      border: 3px solid #3b82f6;
+      border-radius: 15px;
+      padding: 30px;
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .explanation-title {
+      font-size: 1.3rem;
+      color: #1e40af;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .explanation-text {
+      color: #1e3a8a;
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+
+    .language-info {
+      background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+      border: 2px solid #6366f1;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .language-name {
+      font-size: 1rem;
+      color: #4338ca;
+      font-weight: bold;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+      transform: translateX(400px);
+      transition: transform 0.3s;
+      font-weight: bold;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    @media (max-width: 968px) {
+      .dual-generator-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🛡️ Ancient Password Generator</h1>
+      <p class="subtitle">🏆 AI 라이프 솔루션 챌린지 응모작</p>
+      <p>고대어 & 소멸위기 언어 기반 정책별 비밀번호 생성 시스템</p>
+    </div>
+
+    <div class="main-section">
+      <h2 class="section-title">🔐 사이트 정책별 비밀번호 생성기</h2>
+      
+      <div class="generator-form">
+        <div class="form-group">
+          <label class="form-label">🛡️ 비밀번호 정책 선택</label>
+          <div class="select-wrapper">
+            <select id="policy-select">
+              <option value="google">🔵 구글 (8자 이상, ASCII 전용)</option>
+              <option value="apple">🍎 애플 (8자 이상, ASCII 전용)</option>
+              <option value="naver">🟢 네이버 (8-16자, ASCII 전용)</option>
+              <option value="kakao">💬 카카오 (8자 이상, ASCII 전용)</option>
+              <option value="aws">☁️ AWS IAM (12자 이상, 유니코드 지원)</option>
+              <option value="supabase">⚡ 수파베이스 (8자 이상, 유니코드 지원)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">🌍 언어 선택 (고대어 & 소멸위기 언어)</label>
+          <div class="select-wrapper">
+            <select id="language-select">
+              <optgroup label="🛡️ 고대어">
+                <option value="ancient_greek">고대 그리스어</option>
+                <option value="old_norse">고대 노르드어</option>
+                <option value="sumerian">수메르어</option>
+                <option value="phoenician">페니키아어</option>
+                <option value="runic">룬문자</option>
+                <option value="sanskrit">산스크리트어</option>
+              </optgroup>
+              <optgroup label="🌱 소멸위기 언어">
+                <option value="jeju">제주어</option>
+                <option value="hawaiian">하와이어</option>
+                <option value="ainu">아이누어</option>
+                <option value="maori">마오리어</option>
+                <option value="welsh">웨일스어</option>
+                <option value="irish">아일랜드어</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <button class="generate-btn" onclick="generateBoth()">
+          🔮 비밀번호 생성하기 (듀얼 시스템)
+        </button>
+
+        <!-- 듀얼 생성기 -->
+        <div class="dual-generator-container">
+          <!-- 선배 생성기 (ASCII) -->
+          <div class="generator-box" id="senior-generator">
+            <div class="generator-header">
+              <div class="generator-title">✅ 범용 호환 버전 (추천)</div>
+              <button class="regenerate-btn" onclick="generateBoth()">🔄 재생성</button>
+            </div>
+
+            <div class="password-display">
+              <div class="password-label">🔒 실제 사용 비밀번호</div>
+              <div class="script-text" id="senior-password"></div>
+              <div class="info-badge">
+                <strong>엔트로피:</strong> <span id="senior-entropy">0</span> bits | 
+                <strong>등급:</strong> <span id="senior-grade">-</span> | 
+                <strong>호환성:</strong> <span style="color: #10b981; font-weight: bold;">✅ 모든 사이트</span>
+              </div>
+              <button class="copy-btn" onclick="copySenior()">
+                📋 비밀번호 복사
+              </button>
+            </div>
+
+            <div class="language-info">
+              <div class="language-name" id="senior-lang-name">-</div>
+              <div style="font-size: 0.85rem; color: #6366f1; margin-top: 8px;" id="senior-lang-detail">-</div>
+            </div>
+          </div>
+
+          <!-- 후배 생성기 (유니코드) -->
+          <div class="generator-box junior" id="junior-generator">
+            <div class="generator-header">
+              <div class="generator-title junior">🗿 고대 문자 버전 (선택)</div>
+              <button class="regenerate-btn junior" onclick="generateBoth()">🔄 재생성</button>
+            </div>
+
+            <div class="password-display junior">
+              <div class="password-label junior">🎨 고대 문자 비밀번호</div>
+              <div class="script-text junior" id="junior-password"></div>
+              <div class="info-badge junior">
+                <strong>엔트로피:</strong> <span id="junior-entropy">0</span> bits | 
+                <strong>등급:</strong> <span id="junior-grade">-</span> | 
+                <strong>호환성:</strong> <span style="color: #dc2626; font-weight: bold;">⚠️ 제한적</span>
+              </div>
+              <button class="copy-btn junior" onclick="copyJunior()">
+                📋 비밀번호 복사
+              </button>
+            </div>
+
+            <div class="language-info">
+              <div class="language-name" id="junior-lang-name">-</div>
+              <div style="font-size: 0.85rem; color: #6366f1; margin-top: 8px;" id="junior-lang-detail">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 설명 박스 -->
+        <div class="explanation-box" id="explanation-box" style="display: none;">
+          <div class="explanation-title">🤔 왜 비밀번호 생성기가 2개인가요?</div>
+          <div class="explanation-text">
+            <strong style="color: #1e40af;">사이트마다 비밀번호 정책이 다르기 때문입니다!</strong><br><br>
+            
+            <strong style="color: #10b981;">✅ 범용 호환 버전 (좌측)</strong><br>
+            구글, 네이버, 카카오, 애플 등 <strong>대부분의 사이트에서 작동</strong>합니다.<br>
+            ASCII 문자(a-z, A-Z, 0-9, !@#$%^&*())만 사용하여 <strong>호환성 100%</strong>입니다.<br><br>
+            
+            <strong style="color: #f59e0b;">🗿 고대 문자 버전 (우측)</strong><br>
+            실제 고대 문자(𒀭𒊩, αβγ, ᚦᚱ)를 사용한 <strong>낭만적인 버전</strong>입니다.<br>
+            수파베이스, AWS 등 <strong>유니코드를 지원하는 사이트</strong>에서만 작동합니다.<br><br>
+            
+            <strong style="color: #dc2626;">💡 추천:</strong> 먼저 <strong>"범용 호환 버전"</strong>을 시도하세요!<br>
+            작동하지 않으면 해당 사이트는 ASCII 전용입니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">📋 복사 완료!</div>
+
+  <script>
+    // 언어별 ASCII 단어 사전
+    const languageWordsASCII = {
+      ancient_greek: {
+        name: '고대 그리스어',
+        words: ['Athena', 'Zeus', 'Hera', 'Apollo', 'Sparta', 'Athens', 'Delphi', 'Olympus', 'Hades', 'Ares'],
+        meaning: '그리스 신화 기반'
+      },
+      old_norse: {
+        name: '고대 노르드어',
+        words: ['Thor', 'Odin', 'Loki', 'Freya', 'Valhalla', 'Asgard', 'Ragnarok', 'Fenrir', 'Mjolnir', 'Valkyrie'],
+        meaning: '북유럽 신화 기반'
+      },
+      sumerian: {
+        name: '수메르어',
+        words: ['Enlil', 'Inanna', 'Enki', 'Gilgamesh', 'Uruk', 'Lagash', 'Nippur', 'Eridu', 'Anu', 'Nammu'],
+        meaning: '메소포타미아 문명'
+      },
+      phoenician: {
+        name: '페니키아어',
+        words: ['Tyre', 'Sidon', 'Byblos', 'Carthage', 'Melqart', 'Astarte', 'Baal', 'Tanit', 'Adonis'],
+        meaning: '지중해 무역 문명'
+      },
+      runic: {
+        name: '룬문자',
+        words: ['Fehu', 'Uruz', 'Thurisaz', 'Ansuz', 'Raidho', 'Berkana', 'Ehwaz', 'Mannaz', 'Laguz'],
+        meaning: '게르만 룬 알파벳'
+      },
+      sanskrit: {
+        name: '산스크리트어',
+        words: ['Dharma', 'Karma', 'Veda', 'Yoga', 'Mantra', 'Brahma', 'Vishnu', 'Shiva', 'Nirvana'],
+        meaning: '인도 고대 언어'
+      },
+      jeju: {
+        name: '제주어',
+        words: ['Hallasan', 'Dol', 'Haenyeo', 'Oreum', 'Batdam', 'Mul', 'Baramge'],
+        meaning: '제주 고유 어휘'
+      },
+      hawaiian: {
+        name: '하와이어',
+        words: ['Aloha', 'Mahalo', 'Ohana', 'Pono', 'Mana', 'Kapu', 'Hula', 'Lanai'],
+        meaning: '하와이 원주민 언어'
+      },
+      ainu: {
+        name: '아이누어',
+        words: ['Kamuy', 'Kotan', 'Yukar', 'Ekashi', 'Fuchi', 'Chise', 'Pirka', 'Nupuri'],
+        meaning: '일본 홋카이도 원주민'
+      },
+      maori: {
+        name: '마오리어',
+        words: ['Kia', 'Ora', 'Aroha', 'Whanau', 'Mana', 'Tapu', 'Haka', 'Marae'],
+        meaning: '뉴질랜드 원주민'
+      },
+      welsh: {
+        name: '웨일스어',
+        words: ['Cymru', 'Dydd', 'Braf', 'Cariad', 'Heddwch', 'Mynydd', 'Afon', 'Croeso'],
+        meaning: '켈트계 언어'
+      },
+      irish: {
+        name: '아일랜드어',
+        words: ['Slainte', 'Craic', 'Failte', 'Slan', 'Cara', 'Gra', 'Aisling', 'Ceilidh'],
+        meaning: '게일어 계통'
+      }
+    };
+
+    // 언어별 유니코드 문자 사전
+    const languageWordsUnicode = {
+      ancient_greek: {
+        chars: 'αβγδεζηθικλμνξοπρστυφχψω',
+        words: ['Ἀθηνᾶ', 'Ζεύς', 'Ἥρα', 'Ἀπόλλων']
+      },
+      old_norse: {
+        chars: 'þðæøå',
+        words: ['Þórr', 'Óðinn', 'Freyja', 'Valhöll']
+      },
+      sumerian: {
+        chars: '𒀭𒊩𒌆𒄷𒁺𒈾𒄀𒆠',
+        words: ['𒀭𒂗𒆤', '𒀭𒈹', '𒀭𒂗𒆠']
+      },
+      phoenician: {
+        chars: '𐤀𐤁𐤂𐤃𐤄𐤅𐤆𐤇𐤈𐤉',
+        words: ['𐤑𐤓', '𐤑𐤃𐤍', '𐤂𐤁𐤋']
+      },
+      runic: {
+        chars: 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟ',
+        words: ['ᚦᚢᚱ', 'ᚠᚱᛖᛁᚨ', 'ᚢᚱᚢᛉ']
+      },
+      sanskrit: {
+        chars: 'अआइईउऊएऐओऔकखगघङचछजझञटठडढणतथदधन',
+        words: ['धर्म', 'कर्म', 'योग']
+      },
+      jeju: {
+        chars: 'ㅎㅇㄴㅇ',
+        words: ['한라산', '돌하르방', '해녀']
+      },
+      hawaiian: {
+        chars: 'āēīōūʻ',
+        words: ['Aloha', 'Mahalo', 'ʻOhana']
+      },
+      ainu: {
+        chars: 'アイヌ',
+        words: ['カムイ', 'コタン', 'ユカラ']
+      },
+      maori: {
+        chars: 'āēīōū',
+        words: ['Kia', 'Ora', 'Aroha']
+      },
+      welsh: {
+        chars: 'âêîôûŵŷ',
+        words: ['Cymru', 'Dydd', 'Cariad']
+      },
+      irish: {
+        chars: 'áéíóú',
+        words: ['Slínte', 'Fílte', 'Grí']
+      }
+    };
+
+    const policyConfig = {
+      google: { name: '구글', minLength: 8, maxLength: 100, allowUnicode: false, specialChars: '!@#$%^&*()' },
+      apple: { name: '애플', minLength: 8, maxLength: 100, allowUnicode: false, specialChars: '!@#$%^&*()' },
+      naver: { name: '네이버', minLength: 8, maxLength: 16, allowUnicode: false, specialChars: '!@#$%^&*()' },
+      kakao: { name: '카카오', minLength: 8, maxLength: 100, allowUnicode: false, specialChars: '!@#$%^&*()' },
+      aws: { name: 'AWS IAM', minLength: 12, maxLength: 128, allowUnicode: true, specialChars: '!@#$%^&*()_+-=[]{}|' },
+      supabase: { name: '수파베이스', minLength: 8, maxLength: 100, allowUnicode: true, specialChars: '!@#$%^&*()_+-=[]{}|' }
+    };
+
+    function getRandomElement(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateBoth() {
+      const policyId = document.getElementById('policy-select').value;
+      const languageId = document.getElementById('language-select').value;
+      
+      const policy = policyConfig[policyId];
+      const langASCII = languageWordsASCII[languageId];
+      const langUnicode = languageWordsUnicode[languageId];
+
+      // ===== 선배 생성기 (ASCII) =====
+      const word1 = getRandomElement(langASCII.words);
+      const word2 = getRandomElement(langASCII.words);
+      const numbers = getRandomInt(10, 99).toString();
+      const specialChars = policy.specialChars;
+      const special1 = specialChars[Math.floor(Math.random() * specialChars.length)];
+      const special2 = specialChars[Math.floor(Math.random() * specialChars.length)];
+
+      let seniorPassword = word1 + word2 + numbers + special1 + special2;
+
+      // 네이버 16자 제한
+      if (policyId === 'naver' && seniorPassword.length > 16) {
+        seniorPassword = seniorPassword.substring(0, 16);
+      }
+
+      // 최소 길이 보장
+      while (seniorPassword.length < policy.minLength) {
+        seniorPassword += specialChars[Math.floor(Math.random() * specialChars.length)];
+      }
+
+      const seniorLength = seniorPassword.length;
+      const seniorCharsetSize = 26 + 26 + 10 + policy.specialChars.length;
+      const seniorEntropy = (Math.log2(seniorCharsetSize) * seniorLength).toFixed(1);
+      let seniorGrade = 'B';
+      if (seniorEntropy >= 128) seniorGrade = 'S++';
+      else if (seniorEntropy >= 100) seniorGrade = 'S+';
+      else if (seniorEntropy >= 80) seniorGrade = 'S';
+      else if (seniorEntropy >= 60) seniorGrade = 'A';
+
+      // ===== 후배 생성기 (유니코드) =====
+      const unicodeChars = langUnicode.chars;
+      let juniorPassword = '';
+      
+      // 고대 문자 5-8개 선택
+      const unicodeCount = getRandomInt(5, 8);
+      for (let i = 0; i < unicodeCount; i++) {
+        juniorPassword += unicodeChars[Math.floor(Math.random() * unicodeChars.length)];
+      }
+
+      // 영문 단어 추가 (호환성)
+      juniorPassword += getRandomElement(langASCII.words);
+
+      // 숫자 추가
+      juniorPassword += getRandomInt(10, 99).toString();
+
+      // 특수문자 추가
+      juniorPassword += special1 + special2;
+
+      const juniorLength = juniorPassword.length;
+      const juniorCharsetSize = unicodeChars.length + 26 + 26 + 10 + policy.specialChars.length;
+      const juniorEntropy = (Math.log2(juniorCharsetSize) * juniorLength).toFixed(1);
+      let juniorGrade = 'B';
+      if (juniorEntropy >= 128) juniorGrade = 'S++';
+      else if (juniorEntropy >= 100) juniorGrade = 'S+';
+      else if (juniorEntropy >= 80) juniorGrade = 'S';
+      else if (juniorEntropy >= 60) juniorGrade = 'A';
+
+      // UI 업데이트
+      document.getElementById('senior-password').textContent = seniorPassword;
+      document.getElementById('senior-entropy').textContent = seniorEntropy;
+      document.getElementById('senior-grade').textContent = seniorGrade;
+      document.getElementById('senior-lang-name').textContent = langASCII.name;
+      document.getElementById('senior-lang-detail').textContent = `"${word1}" + "${word2}" 조합 (${langASCII.meaning})`;
+
+      document.getElementById('junior-password').textContent = juniorPassword;
+      document.getElementById('junior-entropy').textContent = juniorEntropy;
+      document.getElementById('junior-grade').textContent = juniorGrade;
+      document.getElementById('junior-lang-name').textContent = langASCII.name + ' (고대 문자 버전)';
+      document.getElementById('junior-lang-detail').textContent = `실제 고대 문자 사용 (${langASCII.meaning})`;
+
+      // 생성기 표시
+      document.getElementById('senior-generator').classList.add('show');
+      document.getElementById('junior-generator').classList.add('show');
+      document.getElementById('explanation-box').style.display = 'block';
+    }
+
+    function copySenior() {
+      const password = document.getElementById('senior-password').textContent;
+      navigator.clipboard.writeText(password).then(() => {
+        showToast('📋 범용 호환 비밀번호 복사 완료!');
+      });
+    }
+
+    function copyJunior() {
+      const password = document.getElementById('junior-password').textContent;
+      navigator.clipboard.writeText(password).then(() => {
+        showToast('📋 고대 문자 비밀번호 복사 완료!');
+      });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    // 페이지 로드 시 자동 생성
+    window.addEventListener('load', generateBoth);
+  </script>
+</body>
+</html>
